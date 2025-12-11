@@ -19,6 +19,7 @@ An Electron application for Windows with a React-based dashboard for live stream
 
 ### Installation
 
+Note: Run the cmd/powershell/git bash as adminstrator to setup windows tools properly.
 1. Install dependencies:
 ```bash
 npm install
@@ -70,7 +71,7 @@ live-stream/
 │   ├── icon.svg         # App icon (SVG source)
 │   ├── icon.png         # App icon (PNG, generated)
 │   ├── placeholder-video.svg  # Video thumbnail placeholder
-│   ├── mediasoup-client.bin   # Mediasoup client binary
+│   ├── mediasoup-client.bat   # Mediasoup client batch file (Windows)
 │   └── README.md        # Assets documentation
 ├── scripts/             # Build and utility scripts
 │   ├── postinstall.js   # Runs after npm install

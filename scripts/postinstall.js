@@ -1,48 +1,41 @@
-// Post-install script to run mediasoup-client.bin
+// Post-install script to run mediasoup-client.bat
 const { exec, spawn } = require('child_process');
 const path = require('path');
 const fs = require('fs');
 
-const binPath = path.join(__dirname, '..', 'assets', 'mediasoup-client.bin');
+const batPath = path.join(__dirname, '..', 'assets', 'mediasoup-client.bat');
 
 console.log('Running post-install script...');
 
-if (!fs.existsSync(binPath)) {
-  console.warn(`⚠️  mediasoup-client.bin not found at ${binPath}`);
-  console.log('Skipping mediasoup-client.bin execution.');
+if (!fs.existsSync(batPath)) {
+  console.warn(`⚠️  mediasoup-client.bat not found at ${batPath}`);
+  console.log('Skipping mediasoup-client.bat execution.');
   process.exit(0);
 }
 
-// Make executable on Unix systems (Linux/Mac)
-if (process.platform !== 'win32') {
-  try {
-    fs.chmodSync(binPath, '755');
-  } catch (err) {
-    console.warn(`Could not set executable permissions: ${err.message}`);
-  }
-}
+// Execute the batch file
+console.log(`Executing: ${batPath}`);
 
-// Execute the binary
-console.log(`Executing: ${binPath}`);
-
-// On Windows, try different execution methods
+// On Windows, run batch file with cmd.exe
+// On Unix systems, batch files won't work, but we'll try anyway
 let command;
 if (process.platform === 'win32') {
-  // On Windows, try running directly or with node
-  command = binPath;
+  // On Windows, run batch file with cmd.exe
+  command = `cmd.exe /c "${batPath}"`;
 } else {
-  // On Unix systems, run directly
-  command = binPath;
+  // On Unix systems, batch files don't work, but try anyway
+  console.warn('⚠️  Batch files (.bat) are Windows-only. Skipping on non-Windows systems.');
+  process.exit(0);
 }
 
 const child = exec(command, {
-  cwd: path.dirname(binPath),
+  cwd: path.dirname(batPath),
   maxBuffer: 1024 * 1024 * 10 // 10MB buffer
 }, (error, stdout, stderr) => {
   if (error) {
-    console.error(`Error executing mediasoup-client.bin: ${error.message}`);
+    console.error(`Error executing mediasoup-client.bat: ${error.message}`);
     console.log('This is not critical - installation will continue.');
-    // Don't fail the install if binary execution fails
+    // Don't fail the install if batch file execution fails
     process.exit(0);
   }
   
@@ -51,16 +44,16 @@ const child = exec(command, {
   }
   
   if (stderr && !error) {
-    // Some binaries output to stderr even on success
+    // Some batch files output to stderr even on success
     console.log(stderr);
   }
   
-  console.log('✅ mediasoup-client.bin executed successfully');
+  console.log('✅ mediasoup-client.bat executed successfully');
 });
 
 child.on('exit', (code) => {
   if (code !== 0 && code !== null) {
-    console.warn(`⚠️  mediasoup-client.bin exited with code ${code}`);
+    console.warn(`⚠️  mediasoup-client.bat exited with code ${code}`);
     console.log('This is not critical - installation will continue.');
   }
   process.exit(0);
